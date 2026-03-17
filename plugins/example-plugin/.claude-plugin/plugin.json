@@ -1,0 +1,13 @@
+{
+  "name": "example-plugin",
+  "version": "0.1.0",
+  "description": "A template plugin demonstrating the standard plugin structure",
+  "author": {
+    "name": "allannapier",
+    "url": "https://github.com/allannapier"
+  },
+  "homepage": "https://github.com/allannapier/cc_plugins/tree/main/plugins/example-plugin",
+  "repository": "https://github.com/allannapier/cc_plugins",
+  "license": "MIT",
+  "keywords": ["example", "template"]
+}
