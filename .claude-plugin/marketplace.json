@@ -18,6 +18,15 @@
       "author": {
         "name": "allannapier"
       }
+    },
+    {
+      "name": "acceptance",
+      "source": "./plugins/acceptance",
+      "description": "Interactive acceptance testing skill — gather criteria, agree evaluation methods, verify outcomes, and track results with evidence",
+      "version": "0.1.0",
+      "author": {
+        "name": "allannapier"
+      }
     }
   ]
 }
