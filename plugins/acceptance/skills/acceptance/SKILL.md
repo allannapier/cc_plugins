@@ -9,6 +9,12 @@ You are running an acceptance verification session. Your job is to evaluate **ou
 
 ---
 
+## Before you do anything else — load learnings
+
+Read all files in the `learnings/` subfolder adjacent to this SKILL.md (i.e. at the same directory level). These files contain concise, project-specific knowledge that must inform your decisions throughout the session — tool quirks, repo conventions, known pitfalls. If the folder is empty or missing, continue without it.
+
+---
+
 ## Entry point — read this first, follow only one path
 
 **IMPORTANT: these are completely separate flows. Execute only the one that matches. Never mix flows.**
@@ -36,6 +42,17 @@ You are running an acceptance verification session. Your job is to evaluate **ou
 
 ---
 
+## Workflow locations
+
+Workflows can be stored at two levels:
+
+- **Project level:** `.claude/acceptance/workflows/` — relative to the current project root
+- **User level:** `~/.claude/skills/acceptance/workflows/` — shared across all projects
+
+When listing workflows for run/edit/delete, always scan **both** directories and present a single combined list. Label each entry with `(project)` or `(user)`. If a workflow name exists in both locations, list both entries separately with their respective labels.
+
+---
+
 ## Menu flow — only reached via `/acceptance` with no arguments
 
 Display this menu exactly:
@@ -56,10 +73,10 @@ Pick an option:
 Wait for the user to enter a number. Then:
 
 - **1** → Go to **New session flow** (ask for the first criterion).
-- **2** → Ask: "Which workflow would you like to run?" List available workflows from `.claude/acceptance/workflows/`. Then proceed as **Workflow: run flow** for the chosen name.
+- **2** → Ask: "Which workflow would you like to run?" List available workflows from both project and user level (see **Workflow locations**). Then proceed as **Workflow: run flow** for the chosen name and location.
 - **3** → Go to **Workflow: create flow**.
-- **4** → Ask: "Which workflow would you like to edit?" List available workflows from `.claude/acceptance/workflows/`. Then proceed as **Workflow: edit flow** for the chosen name.
-- **5** → Ask: "Which workflow would you like to delete?" List available workflows from `.claude/acceptance/workflows/`. Then proceed as **Workflow: delete flow** for the chosen name.
+- **4** → Ask: "Which workflow would you like to edit?" List available workflows from both project and user level (see **Workflow locations**). Then proceed as **Workflow: edit flow** for the chosen entry.
+- **5** → Ask: "Which workflow would you like to delete?" List available workflows from both project and user level (see **Workflow locations**). Then proceed as **Workflow: delete flow** for the chosen entry.
 - **6** → Go to **Resume flow**.
 - Anything else → say "Invalid option. Please pick 1, 2, 3, 4, 5, or 6." and re-display the menu.
 
@@ -71,13 +88,15 @@ This flow creates a new workflow file from scratch. **Do not create a run file. 
 
 1. Ask: "What would you like to name this workflow?"
 
-2. Gather criteria one at a time using the same process as Phase 1 of the new session flow (rewrite as observable outcome, propose method, confirm). After each criterion is confirmed, ask: **"Should this criterion run Before or After the user's own criteria?"** Record the answer (Before/After) alongside each criterion.
+2. Ask: "Save at (1) project level (`.claude/acceptance/workflows/`) or (2) user level (`~/.claude/skills/acceptance/workflows/`)?" Record the chosen save path.
+
+3. Gather criteria one at a time using the same process as Phase 1 of the new session flow (rewrite as observable outcome, propose method, confirm). After each criterion is confirmed, ask: **"Should this criterion run Before or After the user's own criteria?"** Record the answer (Before/After) alongside each criterion.
 
    Continue until the user says 'done'.
 
-3. Ensure `.claude/acceptance/workflows/` exists (create if not).
+4. Ensure the chosen save directory exists (create if not).
 
-4. Write the workflow file at `.claude/acceptance/workflows/<name>.md`, placing criteria in the correct section based on their Before/After assignment:
+5. Write the workflow file at `<chosen-path>/<name>.md`, placing criteria in the correct section based on their Before/After assignment:
 
 ```markdown
 ---
@@ -106,7 +125,7 @@ created: [ISO timestamp]
 **Method:** [Agreed evaluation steps and tools]
 ```
 
-5. Confirm: "Workflow '[name]' saved to `.claude/acceptance/workflows/<name>.md`. Run it with `/acceptance workflow <name>`." Stop — do not proceed to verification.
+6. Confirm: "Workflow '[name]' saved to `<chosen-path>/<name>.md`. Run it with `/acceptance workflow <name>`." Stop — do not proceed to verification.
 
 ---
 
@@ -114,7 +133,11 @@ created: [ISO timestamp]
 
 Extract the workflow name from `$ARGUMENTS` (everything after `workflow `).
 
-1. Look for the workflow file at `.claude/acceptance/workflows/<name>.md`. If it does not exist, tell the user: "No workflow named '<name>' found at `.claude/acceptance/workflows/<name>.md`." Offer to list available workflows or start a new session.
+1. Search for the workflow file at both:
+   - Project level: `.claude/acceptance/workflows/<name>.md`
+   - User level: `~/.claude/skills/acceptance/workflows/<name>.md`
+
+   If found in exactly one location, use that file. If found in both, ask the user: "Found '<name>' at both project and user level — which would you like to run?" If found in neither, tell the user: "No workflow named '<name>' found at project or user level." Offer to list available workflows or start a new session.
 
 2. Load the workflow file. It contains three sections:
    - `## Before` — workflow-defined criteria that run first
@@ -139,9 +162,11 @@ Extract the workflow name from `$ARGUMENTS` (everything after `workflow save `).
 
 2. Ask the user which criteria to include in the workflow's `before` section and which in the `after` section. Any unassigned criteria are not saved to the workflow.
 
-3. Ensure `.claude/acceptance/workflows/` exists (create if not).
+3. Ask: "Save at (1) project level (`.claude/acceptance/workflows/`) or (2) user level (`~/.claude/skills/acceptance/workflows/`)?" Record the chosen save path.
 
-4. Write the workflow file at `.claude/acceptance/workflows/<name>.md`:
+4. Ensure the chosen directory exists (create if not).
+
+5. Write the workflow file at `<chosen-path>/<name>.md`:
 
 ```markdown
 ---
@@ -170,7 +195,7 @@ created: [ISO timestamp]
 **Method:** [Agreed evaluation steps and tools]
 ```
 
-5. Confirm to the user: "Workflow '[name]' saved to `.claude/acceptance/workflows/<name>.md`. Run it with `/acceptance workflow <name>`."
+6. Confirm to the user: "Workflow '[name]' saved to `<chosen-path>/<name>.md`. Run it with `/acceptance workflow <name>`."
 
 ---
 
@@ -178,7 +203,7 @@ created: [ISO timestamp]
 
 Extract the workflow name from `$ARGUMENTS` (everything after `workflow edit `).
 
-1. Check the workflow file exists at `.claude/acceptance/workflows/<name>.md`. If not, tell the user it wasn't found and list available workflows.
+1. Search for the workflow file at both project and user level (see **Workflow locations**). If found in both, ask the user which to edit. If found in neither, tell the user it wasn't found and list available workflows from both locations.
 
 2. Load and display the current before and after criteria.
 
@@ -192,7 +217,7 @@ Extract the workflow name from `$ARGUMENTS` (everything after `workflow edit `).
 
 Extract the workflow name from `$ARGUMENTS` (everything after `workflow delete `).
 
-1. Check the workflow file exists at `.claude/acceptance/workflows/<name>.md`. If not, tell the user it wasn't found.
+1. Search for the workflow file at both project and user level (see **Workflow locations**). If found in both, ask the user which to delete. If found in neither, tell the user it wasn't found.
 
 2. Ask for confirmation: "Delete workflow '<name>'? This cannot be undone. (yes/no)"
 
