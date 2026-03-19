@@ -66,6 +66,7 @@ Acceptance Testing
   4. Workflow - Edit
   5. Workflow - Delete
   6. Resume
+  7. Clean up
 
 Pick an option:
 ```
@@ -78,7 +79,8 @@ Wait for the user to enter a number. Then:
 - **4** → Ask: "Which workflow would you like to edit?" List available workflows from both project and user level (see **Workflow locations**). Then proceed as **Workflow: edit flow** for the chosen entry.
 - **5** → Ask: "Which workflow would you like to delete?" List available workflows from both project and user level (see **Workflow locations**). Then proceed as **Workflow: delete flow** for the chosen entry.
 - **6** → Go to **Resume flow**.
-- Anything else → say "Invalid option. Please pick 1, 2, 3, 4, 5, or 6." and re-display the menu.
+- **7** → Go to **Clean up flow**.
+- Anything else → say "Invalid option. Please pick 1–7." and re-display the menu.
 
 ---
 
@@ -426,9 +428,32 @@ Report: .claude/acceptance/[filename]
 
 Update frontmatter `status: COMPLETE` if all criteria passed. Leave as `IN_PROGRESS` if any remain unresolved so `/acceptance resume` can find it.
 
+If all criteria passed, after printing the report ask: **"Delete run file? (yes/no)"** If yes, delete the file. If no, keep it.
+
 If any criteria failed after 3 fix cycles, end with:
 
 > I was unable to satisfy the above criteria after 3 attempts. The run has been saved as IN_PROGRESS. You can resume it later with `/acceptance resume`. Do you want to: (a) adjust the criteria now, (b) give me a hint and retry, or (c) mark this run as complete with known failures?
+
+---
+
+## Clean up flow — only reached via menu option 7
+
+1. Scan all `.md` files in `.claude/acceptance/` (not in the `workflows/` subdirectory). Identify files where frontmatter `status: COMPLETE`.
+
+2. If none found, say: "No completed run files to clean up." and stop.
+
+3. List the files found:
+
+```
+Completed run files:
+
+  1. 20260318-143200-form-validates-on-submit.md
+  2. 20260319-065527-workflow-save-project-or-user.md
+
+Delete all completed run files? (yes/no)
+```
+
+4. If yes, delete all listed files and confirm: "Deleted N run file(s)." If no, cancel and do nothing.
 
 ---
 
